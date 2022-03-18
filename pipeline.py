@@ -336,7 +336,7 @@ pipeline = Pipeline(
     CheckIP(),
     CheckRequirements(),
     GetItemFromTracker('https://{}/{}/multi={}/'
-        .format(TRACKER_HOST, 'arkivertest', MULTI_ITEM_SIZE),
+        .format(TRACKER_HOST, TRACKER_ID, MULTI_ITEM_SIZE),
         downloader, VERSION),
     PrepareDirectories(warc_prefix=TRACKER_ID),
     WgetDownload(
