@@ -1,3 +1,4 @@
 ^https?://[^/]*chowhound%.com/
 ^https?://[^/]*dslreports%.com/
 ^https?://[^/]*meta%.org/
+^https?://[^/]*vfl%.ru/
