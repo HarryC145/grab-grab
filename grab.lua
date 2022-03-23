@@ -489,6 +489,30 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 end
 
 wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total_downloaded_bytes, total_download_time)
+  local function submit_backfeed(newurls, key)
+    local tries = 0
+    local maxtries = 4
+    while tries < maxtries do
+      local body, code, headers, status = http.request(
+        "https://legacy-api.arpa.li/backfeed/legacy/" .. key,
+        newurls .. "\0"
+      )
+      print(body)
+      if code == 200 then
+        io.stdout:write("Submitted discovered URLs.\n")
+        io.stdout:flush()
+        break
+      end
+      io.stdout:write("Failed to submit discovered URLs." .. tostring(code) .. tostring(body) .. "\n")
+      io.stdout:flush()
+      os.execute("sleep " .. math.floor(math.pow(2, tries)))
+      tries = tries + 1
+    end
+    if tries == maxtries then
+      abortgrab = true
+    end
+  end
+
   for key, items_data in pairs({
     ["grab-8b7twsee9dkrqvw"]=queued_urls
   }) do
@@ -506,26 +530,7 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
       end
     end
     if newurls ~= nil then
-      local tries = 0
-      while tries < 10 do
-        local body, code, headers, status = http.request(
-          "https://legacy-api.arpa.li/backfeed/legacy/" .. key,
-          newurls .. "\0"
-        )
-        print(body)
-        if code == 200 then
-          io.stdout:write("Submitted discovered URLs.\n")
-          io.stdout:flush()
-          break
-        end
-        io.stdout:write("Failed to submit discovered URLs." .. tostring(code) .. tostring(body) .. "\n")
-        io.stdout:flush()
-        os.execute("sleep " .. math.floor(math.pow(2, tries)))
-        tries = tries + 1
-      end
-      if tries == 12 then
-        abortgrab = true
-      end
+      submit_backfeed(newurls, key)
     end
   end
 
