@@ -4,3 +4,4 @@
 ^https?://[^/]*vfl%.ru/
 ^https?://[^/]*joindota%.com/
 ^https?://[^/]*stackoverflow%.com/jobs
+^https?://[^/]*ria%-m%.tv/
